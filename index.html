@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhonePe Recharge - Fast, Secure, Simple</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f3ebf6; color: #333; display: flex; justify-content: center; padding-bottom: 40px; }
+        .app-container { width: 100%; max-width: 480px; background: #f3ebf6; min-height: 100vh; position: relative; }
+        
+        /* Header */
+        .header { background-color: #5f259f; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .logo-circle { background: white; color: #5f259f; font-weight: bold; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 18px; }
+        .header-title h2 { font-size: 16px; font-weight: 600; }
+        .header-title p { font-size: 11px; opacity: 0.8; }
+        .header-right { display: flex; gap: 15px; font-size: 18px; }
+
+        /* Banner */
+        .banner-box { background: linear-gradient(135deg, #7b2cbf, #5f259f); margin: 15px; border-radius: 12px; padding: 15px; color: white; text-align: center; box-shadow: 0 4px 10px rgba(95,37,159,0.3); }
+        .timer-badge { background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 12px; margin-bottom: 10px; font-weight: 500; }
+        .banner-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
+        .plans-mini-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .mini-card { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 8px; min-width: 100px; text-align: center; flex-shrink: 0; font-size: 11px; }
+        .mini-card b { font-size: 13px; display: block; color: #ffeb3b; }
+
+        /* Card Section */
+        .card { background: white; margin: 15px; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .card-header h3 { font-size: 15px; color: #222; }
+        .secure-tag { background: #e8f5e9; color: #2e7d32; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+
+        /* Operators */
+        .operators-grid { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .operator-item { text-align: center; cursor: pointer; position: relative; }
+        .operator-logo { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-bottom: 5px; background: #fafafa; transition: 0.2s; }
+        .operator-item.active .operator-logo { border-color: #5f259f; box-shadow: 0 0 0 2px rgba(95,37,159,0.2); }
+        .operator-item span { font-size: 12px; color: #555; }
+        .radio-dot { position: absolute; top: 0; right: 5px; width: 14px; height: 14px; background: #5f259f; border-radius: 50%; border: 2px solid white; display: none; }
+        .operator-item.active .radio-dot { display: block; }
+
+        /* Input Box */
+        .input-label { font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
+        .phone-input-box { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fafafa; }
+        .phone-input-box span { font-weight: bold; margin-right: 8px; font-size: 15px; }
+        .phone-input-box input { border: none; background: none; outline: none; font-size: 16px; width: 100%; letter-spacing: 1px; }
+
+        /* Action Button */
+        .btn-primary { background: #5f259f; color: white; border: none; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; text-align: center; display: block; }
+
+        /* Footer badges */
+        .footer-badges { display: flex; justify-content: space-around; font-size: 11px; color: #666; margin-top: 15px; }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Plans Screen */
+        .selected-box { background: white; margin: 15px; padding: 12px 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .change-btn { color: #5f259f; font-weight: bold; background: #f3ebf6; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
+        
+        .plan-card { background: white; margin: 15px; border-radius: 12px; padding: 15px; border: 1px solid #eee; position: relative; }
+        .plan-header-tag { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .badge-new { background: #ffebee; color: #c62828; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .operator-tag-text { font-size: 11px; color: #5f259f; font-weight: bold; }
+        .plan-price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+        .current-price { font-size: 22px; font-weight: bold; color: #222; }
+        .old-price { font-size: 14px; color: #999; text-decoration: line-through; }
+        .plan-features { display: flex; justify-content: space-between; background: #fafafa; padding: 10px; border-radius: 8px; text-align: center; font-size: 11px; color: #555; margin-bottom: 12px; }
+        .plan-features b { display: block; font-size: 12px; color: #222; margin-top: 2px; }
+        .btn-select-plan { background: #f3ebf6; color: #5f259f; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+        /* Checkout Screen */
+        .checkout-box { background: white; margin: 15px; border-radius: 12px; overflow: hidden; }
+        .checkout-option { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        .checkout-option-left { display: flex; align-items: center; gap: 12px; }
+        
+        /* Merchant Card inside Checkout */
+        .merchant-card { background: white; margin: 15px; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+        .merchant-avatar { width: 50px; height: 50px; background: #d0e1fd; color: #1a56db; font-weight: bold; font-size: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .merchant-name { font-size: 18px; font-weight: bold; color: #222; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .blue-tick { color: #0052cc; font-size: 16px; }
+        .qr-container { background: linear-gradient(135deg, #00baf2, #002d62); padding: 15px; border-radius: 20px; margin-top: 15px; }
+        .qr-inner-box { background: white; padding: 15px; border-radius: 12px; text-align: center; }
+        .qr-inner-box img { width: 180px; height: 180px; margin: 10px auto; display: block; }
+        .upi-id-text { font-size: 13px; color: #444; margin-top: 5px; font-weight: 500; }
+
+        .summary-box { background: white; margin: 15px; border-radius: 12px; padding: 15px; font-size: 13px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #666; }
+        .summary-row.total { font-weight: bold; color: #222; font-size: 16px; border-top: 1px dashed #ddd; padding-top: 8px; margin-top: 8px; }
+
+        /* Loading Overlay */
+        #loadingScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .loading-card { background: white; padding: 25px; border-radius: 16px; text-align: center; width: 80%; max-width: 300px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #5f259f; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- SCREEN 1: HOME PAGE -->
+    <div id="screenHome" class="screen active">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-circle">📞</div>
+                <div class="header-title">
+                    <h2>PhonePe Recharge</h2>
+                    <p>Fast • Secure • Simple</p>
+                </div>
+            </div>
+            <div class="header-right">🛡️ 🔔</div>
+        </div>
+
+        <div class="banner-box">
+            <div class="timer-badge">⏳ Special Offer Ends In <span id="countdown">09:31</span></div>
+            <div class="banner-title">💎 PhonePe BEST SAVINGS OFFERS!</div>
+            <div class="plans-mini-scroll">
+                <div class="mini-card">₹299/- <b>2GB/DAY</b> 84 Days</div>
+                <div class="mini-card">₹399/- <b>2.5GB/DAY</b> 6 Months</div>
+                <div class="mini-card">₹499/- <b>3GB/DAY</b> 12 Months</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Recharge your mobile</h3>
+                <span class="secure-tag">🔒 SECURE</span>
+            </div>
+
+            <div class="input-label">Network provider</div>
+            <div class="operators-grid">
+                <div class="operator-item active" onclick="selectOperator('Jio', this)">
+                    <div class="operator-logo" style="color: #0078d7;">Jio</div>
+                    <span>Jio</span>
+                    <div class="radio-dot"></div>
+                </div>
+                <div class="operator-item" onclick="selectOperator('Airtel', this)">
+                    <div class="operator-logo" style="color: #e60000;">Airtel</div>
+                    <span>Airtel</span>
+                    <div class="radio-dot"></div>
+                </div>
+                <div class="operator-item" onclick="selectOperator('Vi', this)">
+                    <div class="operator-logo" style="color: #ff0000;">Vi</div>
+                    <span>Vi</span>
+                    <div class="radio-dot"></div>
+                </div>
+                <div class="operator-item" onclick="selectOperator('BSNL', this)">
+                    <div class="operator-logo" style="color: #125688;">BSNL</div>
+                    <span>BSNL</span>
+                    <div class="radio-dot"></div>
+                </div>
+            </div>
+
+            <div class="input-label">Mobile number</div>
+            <div class="phone-input-box">
+                <span>+91</span>
+                <input type="tel" id="mobileInput" placeholder="00000 00000" maxlength="10">
+            </div>
+
+            <button class="btn-primary" onclick="startVerification()">Recharge Now ➔</button>
+
+            <div class="footer-badges">
+                <span>🛡️ Protected</span>
+                <span>⚡ Instant plans</span>
+                <span>✔️ Verified</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: PLANS PAGE -->
+    <div id="screenPlans" class="screen">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-circle">📞</div>
+                <div class="header-title">
+                    <h2>Recharge Plans</h2>
+                    <p>Fast • Secure • Simple</p>
+                </div>
+            </div>
+            <div class="header-right">🛡️ 🔔</div>
+        </div>
+
+        <div class="selected-box">
+            <div>
+                <span style="font-size:10px; color:#888; text-transform:uppercase; font-weight:bold;">Selected Number</span>
+                <div id="displayNumberInfo" style="font-weight:bold; margin-top:2px;">Airtel • +91 9983717249</div>
+            </div>
+            <button class="change-btn" onclick="goHome()">Change</button>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-header-tag">
+                <span class="badge-new">NEW</span>
+                <span class="operator-tag-text" id="planOpTag1">AIRTEL PLAN</span>
+            </div>
+            <div class="plan-price-row">
+                <span class="current-price" id="priceVal1">₹499</span>
+                <span class="old-price">₹3999</span>
+                <span style="color: #00c853; font-size: 11px; font-weight: bold; margin-left: auto;">UNLIMITED TRUE 5G DATA</span>
+            </div>
+            <div class="plan-features">
+                <div>VALIDITY <b>365 Days</b></div>
+                <div>DATA <b>3GB/day</b></div>
+                <div>VOICE <b>Unlimited</b></div>
+                <div>SMS <b>100/day</b></div>
+            </div>
+            <button class="btn-select-plan" onclick="selectPlan('499')">Recharge for ₹499</button>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-header-tag">
+                <span class="badge-new">NEW</span>
+                <span class="operator-tag-text" id="planOpTag2">AIRTEL PLAN</span>
+            </div>
+            <div class="plan-price-row">
+                <span class="current-price">₹399</span>
+                <span class="old-price">₹2599</span>
+                <span style="color: #00c853; font-size: 11px; font-weight: bold; margin-left: auto;">UNLIMITED TRUE 5G DATA</span>
+            </div>
+            <div class="plan-features">
+                <div>VALIDITY <b>200 Days</b></div>
+                <div>DATA <b>2.5GB/day</b></div>
+                <div>VOICE <b>Unlimited</b></div>
+                <div>SMS <b>100/day</b></div>
+            </div>
+            <button class="btn-select-plan" onclick="selectPlan('399')">Recharge for ₹399</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: CHECKOUT & QR PAGE -->
+    <div id="screenCheckout" class="screen">
+        <div class="header">
+            <div class="header-left" style="cursor: pointer;" onclick="backToPlans()">
+                <span style="font-size: 18px; margin-right: 5px;">←</span>
+                <div class="header-title">
+                    <h2>Secure Checkout</h2>
+                    <p>UPI • Verified • Fast</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="selected-box">
+            <div>
+                <div id="checkoutSubInfo" style="font-weight:bold; color:#5f259f;">Recharge for +91 9983717249</div>
+            </div>
+            <button class="change-btn" onclick="backToPlans()">Change</button>
+        </div>
+
+        <!-- Merchant QR Card (Rishabh Sharma Details) -->
+        <div class="merchant-card">
+            <div class="merchant-avatar">RS</div>
+            <div class="merchant-name">
+                Rishabh Sharma <span class="blue-tick">✔</span>
+            </div>
+            
+            <div class="qr-container">
+                <div class="qr-inner-box">
+                    <img id="dynamicQR" src="" alt="Rishabh Sharma UPI QR">
+                    <div style="font-size: 14px; font-weight: bold; color: #222; margin-top: 5px;">Scan & Pay <span id="displayAmountTag" style="color:#5f259f;">₹499</span></div>
+                    <div class="upi-id-text">rishabh1886@ptyes</div>
+                </div>
+            </div>
+            <p style="font-size: 11px; color: #666; margin-top: 12px;">Scan using GPay, PhonePe, Paytm or BHIM app</p>
+        </div>
+
+        <div class="summary-box">
+            <div style="font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">RECHARGE SUMMARY <span style="float: right; color: #00c853;">✔ VERIFIED</span></div>
+            <div class="summary-row"><span>Operator</span> <b id="sumOperator" style="color:#222;">AIRTEL</b></div>
+            <div class="summary-row"><span>Mobile</span> <b id="sumMobile" style="color:#222;">+91 9983717249</b></div>
+            <div class="summary-row total"><span>Total Payable Amount</span> <b id="sumAmount" style="color:#5f259f; font-size: 18px;">₹499</b></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingScreen">
+    <div class="loading-card">
+        <div class="spinner"></div>
+        <h3 id="loadingText" style="font-size: 16px; margin-bottom: 5px;">Verifying number</h3>
+        <p style="font-size: 12px; color: #666;" id="loadingSubText">Checking your recharge details...</p>
+    </div>
+</div>
+
+<script>
+    let selectedOperatorName = "Jio";
+    let selectedMobileNumber = "";
+    let chosenAmount = "499";
+
+    function selectOperator(opName, element) {
+        document.querySelectorAll('.operator-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        selectedOperatorName = opName;
+    }
+
+    function startVerification() {
+        const mob = document.getElementById('mobileInput').value;
+        if(mob.length < 10) {
+            alert('Kripya 10 anko ka sahi mobile number darj karein.');
+            return;
+        }
+        selectedMobileNumber = mob;
+
+        const loader = document.getElementById('loadingScreen');
+        loader.style.display = 'flex';
+        document.getElementById('loadingText').innerText = "Verifying number";
+        document.getElementById('loadingSubText').innerText = "Checking your recharge details...";
+
+        setTimeout(() => {
+            document.getElementById('loadingText').innerText = "Number verified";
+            document.getElementById('loadingSubText').innerText = "Loading available recharge plans...";
+            setTimeout(() => {
+                loader.style.display = 'none';
+                showScreen('screenPlans');
+                document.getElementById('displayNumberInfo').innerText = `${selectedOperatorName} • +91 ${selectedMobileNumber}`;
+                document.getElementById('planOpTag1').innerText = `${selectedOperatorName.toUpperCase()} PLAN`;
+                document.getElementById('planOpTag2').innerText = `${selectedOperatorName.toUpperCase()} PLAN`;
+            }, 1000);
+        }, 1200);
+    }
+
+    function selectPlan(amount) {
+        chosenAmount = amount;
+        const loader = document.getElementById('loadingScreen');
+        loader.style.display = 'flex';
+        document.getElementById('loadingText').innerText = "Generating Secure QR";
+        document.getElementById('loadingSubText').innerText = "Connecting to Rishabh Sharma UPI...";
+
+        setTimeout(() => {
+            loader.style.display = 'none';
+            showScreen('screenCheckout');
+            
+            // Update summary and dynamic QR code with exact amount and UPI ID
+            document.getElementById('checkoutSubInfo').innerText = `Recharge for +91 ${selectedMobileNumber}`;
+            document.getElementById('sumOperator').innerText = selectedOperatorName.toUpperCase();
+            document.getElementById('sumMobile').innerText = `+91 ${selectedMobileNumber}`;
+            document.getElementById('sumAmount').innerText = `₹${chosenAmount}`;
+            document.getElementById('displayAmountTag').innerText = `₹${chosenAmount}`;
+
+            // Generate QR code targeting rishabh1886@ptyes
+            let upiString = `upi://pay?pa=rishabh1886@ptyes&pn=Rishabh%20Sharma&am=${chosenAmount}&cu=INR`;
+            let qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+            document.getElementById('dynamicQR').src = qrApiUrl;
+        }, 1000);
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function goHome() {
+        showScreen('screenHome');
+    }
+
+    function backToPlans() {
+        showScreen('screenPlans');
+    }
+
+    let time = 600;
+    setInterval(() => {
+        let m = Math.floor(time / 60);
+        let s = time % 60;
+        let formatted = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        const timerEl = document.getElementById('countdown');
+        if(timerEl) timerEl.innerText = formatted;
+        if(time > 0) time--;
+    }, 1000);
+</script>
+
+</body>
+</html>
