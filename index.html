@@ -72,19 +72,18 @@
         .btn-select-plan { background: #f3ebf6; color: #5f259f; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
         /* Checkout Screen */
-        .checkout-box { background: white; margin: 15px; border-radius: 12px; overflow: hidden; }
-        .checkout-option { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-        .checkout-option-left { display: flex; align-items: center; gap: 12px; }
-        
-        /* Merchant Card inside Checkout */
         .merchant-card { background: white; margin: 15px; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
         .merchant-avatar { width: 50px; height: 50px; background: #d0e1fd; color: #1a56db; font-weight: bold; font-size: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
         .merchant-name { font-size: 18px; font-weight: bold; color: #222; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .blue-tick { color: #0052cc; font-size: 16px; }
+        
         .qr-container { background: linear-gradient(135deg, #00baf2, #002d62); padding: 15px; border-radius: 20px; margin-top: 15px; }
         .qr-inner-box { background: white; padding: 15px; border-radius: 12px; text-align: center; }
         .qr-inner-box img { width: 180px; height: 180px; margin: 10px auto; display: block; }
         .upi-id-text { font-size: 13px; color: #444; margin-top: 5px; font-weight: 500; }
+
+        /* Direct UPI App Open Button */
+        .btn-direct-pay { background: #00baf2; color: white; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; text-align: center; display: block; text-decoration: none; box-shadow: 0 4px 10px rgba(0,186,242,0.3); }
 
         .summary-box { background: white; margin: 15px; border-radius: 12px; padding: 15px; font-size: 13px; }
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #666; }
@@ -249,12 +248,15 @@
             <button class="change-btn" onclick="backToPlans()">Change</button>
         </div>
 
-        <!-- Merchant QR Card (Rishabh Sharma Details) -->
+        <!-- Merchant QR Card & Direct Pay Button -->
         <div class="merchant-card">
             <div class="merchant-avatar">RS</div>
             <div class="merchant-name">
                 Rishabh Sharma <span class="blue-tick">✔</span>
             </div>
+            
+            <!-- Direct UPI App Payment Button -->
+            <a id="directPayBtn" href="#" class="btn-direct-pay">⚡ Pay Now with PhonePe / Paytm</a>
             
             <div class="qr-container">
                 <div class="qr-inner-box">
@@ -263,7 +265,7 @@
                     <div class="upi-id-text">rishabh1886@ptyes</div>
                 </div>
             </div>
-            <p style="font-size: 11px; color: #666; margin-top: 12px;">Scan using GPay, PhonePe, Paytm or BHIM app</p>
+            <p style="font-size: 11px; color: #666; margin-top: 12px;">Click above button to pay directly via UPI App</p>
         </div>
 
         <div class="summary-box">
@@ -333,15 +335,20 @@
             loader.style.display = 'none';
             showScreen('screenCheckout');
             
-            // Update summary and dynamic QR code with exact amount and UPI ID
+            // Update summary and tags
             document.getElementById('checkoutSubInfo').innerText = `Recharge for +91 ${selectedMobileNumber}`;
             document.getElementById('sumOperator').innerText = selectedOperatorName.toUpperCase();
             document.getElementById('sumMobile').innerText = `+91 ${selectedMobileNumber}`;
             document.getElementById('sumAmount').innerText = `₹${chosenAmount}`;
             document.getElementById('displayAmountTag').innerText = `₹${chosenAmount}`;
 
-            // Generate QR code targeting rishabh1886@ptyes
+            // UPI Intent Link (Yeh seedha phonepe/paytm app khol dega)
             let upiString = `upi://pay?pa=rishabh1886@ptyes&pn=Rishabh%20Sharma&am=${chosenAmount}&cu=INR`;
+            
+            // Set Direct Pay Button Link
+            document.getElementById('directPayBtn').href = upiString;
+
+            // Generate QR Code
             let qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
             document.getElementById('dynamicQR').src = qrApiUrl;
         }, 1000);
